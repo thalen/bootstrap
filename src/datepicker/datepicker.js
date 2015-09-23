@@ -23,7 +23,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
 .controller('DatepickerController', ['$scope', '$attrs', '$parse', '$interpolate', '$log', 'dateFilter', 'datepickerConfig', '$datepickerSuppressError', function($scope, $attrs, $parse, $interpolate, $log, dateFilter, datepickerConfig, $datepickerSuppressError) {
   var self = this,
       ngModelCtrl = { $setViewValue: angular.noop }; // nullModelCtrl;
-
+  self.directionChanged = false;
   // Modes chain
   this.modes = ['day', 'month', 'year'];
 
@@ -76,7 +76,17 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
   }
 
   $scope.isActive = function(dateObject) {
+    if (typeof self.shadowDate !== 'undefined') {
+      if (self.compare(dateObject.date, self.shadowDate) === 0) {
+        $scope.activeDateId = dateObject.uid;
+        return true;
+      }
+      return false;
+    }
     if (self.compare(dateObject.date, self.activeDate) === 0) {
+      if (self.directionChanged) {
+        return false;
+      }
       $scope.activeDateId = dateObject.uid;
       return true;
     }
@@ -155,6 +165,8 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
   };
 
   $scope.select = function(date) {
+    self.directionChanged = false;
+    self.shadowDate = undefined;
     if ($scope.datepickerMode === self.minMode) {
       var dt = ngModelCtrl.$viewValue ? new Date(ngModelCtrl.$viewValue) : new Date(0, 0, 0, 0, 0, 0, 0);
       dt.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
@@ -170,6 +182,40 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
     var year = self.activeDate.getFullYear() + direction * (self.step.years || 0),
         month = self.activeDate.getMonth() + direction * (self.step.months || 0);
     self.activeDate.setFullYear(year, month, 1);
+    if (typeof ngModelCtrl.$modelValue !== 'undefined' && ngModelCtrl.$modelValue !== null) {
+      var prevValue = undefined;
+      if (typeof ngModelCtrl.$modelValue === 'string' || ngModelCtrl.$modelValue instanceof String) {
+          prevValue = Date.parse(ngModelCtrl.$modelValue);
+      } else {
+          prevValue = ngModelCtrl.$modelValue.getTime();
+      }
+
+      var from = new Date(self.activeDate.getTime());
+      var day = self.activeDate.getDay();
+      if (day !== 0) {
+        from.setFullYear(year, month, -day);
+      }
+      from = from.getTime();
+
+      var nextYear = month === 11 ? year+1 : year;
+      var nextMonth = month+1 % 12;
+      var tom = new Date(self.activeDate.getTime());
+      tom.setFullYear(nextYear, nextMonth, 1);
+      tom = tom.getTime();
+      if (!(from <= prevValue && prevValue < tom)) {
+        self.directionChanged = true;
+      } else {
+        self.directionChanged = false;
+        var tmp = new Date(prevValue);
+        if (tmp.getMonth() !== month) {
+          self.shadowDate = tmp;
+        } else {
+          self.shadowDate = undefined;
+          self.activeDate = new Date(prevValue);
+        }
+
+      }
+    }
     self.refreshView();
   };
 
