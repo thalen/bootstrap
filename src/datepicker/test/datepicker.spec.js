@@ -276,6 +276,13 @@ describe('datepicker directive', function() {
         expect($rootScope.date).toEqual(new Date('September 15, 2010 15:30:00'));
       });
 
+      it('moves to the previous month & renders correctly the selected date', function () {
+        clickOption(3);
+        expect($rootScope.date).toEqual(new Date('September 01, 2010 15:30:00'));
+        clickPreviousButton();
+        expectSelectedElement(31);
+      });
+
       it('moves to the previous month & renders correctly when `previous` button is clicked', function() {
         clickPreviousButton();
 
@@ -299,6 +306,20 @@ describe('datepicker directive', function() {
 
         clickOption(17);
         expect($rootScope.date).toEqual(new Date('August 18, 2010 15:30:00'));
+      });
+
+      it('moves to the next month & renders correctly the selected date', function () {
+        clickOption(32);
+        expect($rootScope.date).toEqual(new Date('September 30, 2010 15:30:00'));
+        clickNextButton();
+        expectSelectedElement(4);
+      });
+
+      it('moves to the next month & renders all dates without selection', function () {
+        clickOption(7);
+        expect($rootScope.date).toEqual(new Date('September 05, 2010 15:30:00'));
+        clickNextButton();
+        expectSelectedElement(null);
       });
 
       it('moves to the next month & renders correctly when `next` button is clicked', function() {

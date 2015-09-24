@@ -23,7 +23,8 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
 .controller('DatepickerController', ['$scope', '$attrs', '$parse', '$interpolate', '$log', 'dateFilter', 'datepickerConfig', '$datepickerSuppressError', function($scope, $attrs, $parse, $interpolate, $log, dateFilter, datepickerConfig, $datepickerSuppressError) {
   var self = this,
       ngModelCtrl = { $setViewValue: angular.noop }; // nullModelCtrl;
-  self.directionChanged = false;
+  self.ignoreDateCompare = false;
+
   // Modes chain
   this.modes = ['day', 'month', 'year'];
 
@@ -76,15 +77,16 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
   }
 
   $scope.isActive = function(dateObject) {
-    if (typeof self.shadowDate !== 'undefined') {
-      if (self.compare(dateObject.date, self.shadowDate) === 0) {
+    var compareDate = typeof self.otherMonthSelectedDate !== 'undefined' ? self.otherMonthSelectedDate : self.activeDate;
+    /*if (typeof self.otherMonthSelectedDate !== 'undefined') {
+      if (self.compare(dateObject.date, self.otherMonthSelectedDate) === 0) {
         $scope.activeDateId = dateObject.uid;
         return true;
       }
       return false;
-    }
-    if (self.compare(dateObject.date, self.activeDate) === 0) {
-      if (self.directionChanged) {
+    }*/
+    if (self.compare(dateObject.date, compareDate) === 0) {
+      if (self.ignoreDateCompare) {
         return false;
       }
       $scope.activeDateId = dateObject.uid;
@@ -165,8 +167,8 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
   };
 
   $scope.select = function(date) {
-    self.directionChanged = false;
-    self.shadowDate = undefined;
+    self.ignoreDateCompare = false;
+    self.otherMonthSelectedDate = undefined;
     if ($scope.datepickerMode === self.minMode) {
       var dt = ngModelCtrl.$viewValue ? new Date(ngModelCtrl.$viewValue) : new Date(0, 0, 0, 0, 0, 0, 0);
       dt.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
@@ -190,45 +192,45 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
           prevValue = ngModelCtrl.$modelValue.getTime();
       }
 
-      var from = new Date(self.activeDate.getTime());
+      var start = new Date(self.activeDate.getTime());
       //if from is a monday we keep it as it is
-      if (from.getDay() !== 1) {
-        from.setFullYear(year, month, 0); //set last day previous month
-        var day = from.getDay();
+      if (start.getDay() !== 1) {
+        start.setFullYear(year, month, 0); //set last day previous month
+        var day = start.getDay();
         if (day === 0) {
           day = 5;
         } else if (day > 0) {
           day = day - 1;
         }
-        from.setFullYear(year, month, -day);
+        start.setFullYear(year, month, -day);
       }
 
-      from = from.getTime();
+      start = start.getTime();
 
       var nextYear = month === 11 ? year+1 : year;
       var nextMonth = month+1 % 12;
-      var tom = new Date(self.activeDate.getTime());
-      tom.setFullYear(nextYear, nextMonth, 1);
-      tom = tom.getTime();
+      var end = new Date(self.activeDate.getTime());
+      end.setFullYear(nextYear, nextMonth, 1);
+      end = end.getTime();
       var oneDay = 86400000;
-      var numberofDays = (tom-from)/oneDay;
+      var numberofDays = (end-start)/oneDay;
 
       var days2Add = 42 - Math.round(numberofDays);
-      tom = new Date(tom);
-      tom.setFullYear(nextYear, nextMonth, days2Add);
-      var tmpDate = new Date(from);
-      
-      tom = tom.getTime();
-      if (!(from <= prevValue && prevValue <= tom)) {
-        self.directionChanged = true;
+      end = new Date(end);
+      end.setFullYear(nextYear, nextMonth, days2Add);
+      var tmpDate = new Date(start);
+
+      end = end.getTime();
+      if (!(start <= prevValue && prevValue <= end)) {
+        self.ignoreDateCompare = true;
       } else {
-        self.directionChanged = false;
+        self.ignoreDateCompare = false;
         var tmp = new Date(prevValue);
         if (tmp.getMonth() !== month) {
-          self.shadowDate = tmp;
+          self.otherMonthSelectedDate = tmp;
         } else {
-          self.shadowDate = undefined;
-          self.activeDate = new Date(prevValue);
+          self.otherMonthSelectedDate = undefined;
+          self.activeDate = tmp;
         }
 
       }
