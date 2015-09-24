@@ -191,10 +191,18 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
       }
 
       var from = new Date(self.activeDate.getTime());
-      var day = self.activeDate.getDay();
-      if (day !== 0) {
+      //if from is a monday we keep it as it is
+      if (from.getDay() !== 1) {
+        from.setFullYear(year, month, 0); //set last day previous month
+        var day = from.getDay();
+        if (day === 0) {
+          day = 5;
+        } else if (day > 0) {
+          day = day - 1;
+        }
         from.setFullYear(year, month, -day);
       }
+
       from = from.getTime();
 
       var nextYear = month === 11 ? year+1 : year;
@@ -202,7 +210,16 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
       var tom = new Date(self.activeDate.getTime());
       tom.setFullYear(nextYear, nextMonth, 1);
       tom = tom.getTime();
-      if (!(from <= prevValue && prevValue < tom)) {
+      var oneDay = 86400000;
+      var numberofDays = (tom-from)/oneDay;
+
+      var days2Add = 42 - Math.round(numberofDays);
+      tom = new Date(tom);
+      tom.setFullYear(nextYear, nextMonth, days2Add);
+      var tmpDate = new Date(from);
+      
+      tom = tom.getTime();
+      if (!(from <= prevValue && prevValue <= tom)) {
         self.directionChanged = true;
       } else {
         self.directionChanged = false;
