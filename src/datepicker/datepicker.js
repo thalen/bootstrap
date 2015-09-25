@@ -78,13 +78,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
 
   $scope.isActive = function(dateObject) {
     var compareDate = typeof self.otherMonthSelectedDate !== 'undefined' ? self.otherMonthSelectedDate : self.activeDate;
-    /*if (typeof self.otherMonthSelectedDate !== 'undefined') {
-      if (self.compare(dateObject.date, self.otherMonthSelectedDate) === 0) {
-        $scope.activeDateId = dateObject.uid;
-        return true;
-      }
-      return false;
-    }*/
+
     if (self.compare(dateObject.date, compareDate) === 0) {
       if (self.ignoreDateCompare) {
         return false;
@@ -197,6 +191,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
         prevValue = ngModelCtrl.$modelValue.getTime();
       }
 
+      //calculate the start date in the calendar view based on which day of the week activeDate is
       var start = new Date(self.activeDate.getTime());
       //if from is a monday we keep it as it is
       if (start.getDay() !== 1) {
@@ -218,6 +213,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
       end.setFullYear(nextYear, nextMonth, 1);
       end = end.getTime();
       var oneDay = 86400000;
+      //add days to the end date to get the correct end date for the calendar view
       var numberofDays = (end-start)/oneDay;
 
       var days2Add = 42 - Math.round(numberofDays);
@@ -232,6 +228,9 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
         self.ignoreDateCompare = false;
         var tmp = new Date(prevValue);
         if (tmp.getMonth() !== month) {
+          /*need an extra variable to keep track on a selected date at the end of the previous month
+            or in the beginning of the next month
+          */
           self.otherMonthSelectedDate = tmp;
         } else {
           self.otherMonthSelectedDate = undefined;
@@ -246,69 +245,11 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
     var year = self.activeDate.getFullYear() + direction * (self.step.years || 0),
         month = self.activeDate.getMonth() + direction * (self.step.months || 0);
     self.activeDate.setFullYear(year, month, 1);
-    /*if ($scope.datepickerMode === 'day') {
-      self.calculateDateinterval();
-    } else {
-      self.clearIntervalVars();
-    }*/
     self.calculateDateinterval();
-    /*
-    if (typeof ngModelCtrl.$modelValue !== 'undefined' && ngModelCtrl.$modelValue !== null) {
-      var prevValue = undefined;
-      if (typeof ngModelCtrl.$modelValue === 'string' || ngModelCtrl.$modelValue instanceof String) {
-          prevValue = Date.parse(ngModelCtrl.$modelValue);
-      } else {
-          prevValue = ngModelCtrl.$modelValue.getTime();
-      }
-
-      var start = new Date(self.activeDate.getTime());
-      //if from is a monday we keep it as it is
-      if (start.getDay() !== 1) {
-        start.setFullYear(year, month, 0); //set last day previous month
-        var day = start.getDay();
-        if (day === 0) {
-          day = 5;
-        } else if (day > 0) {
-          day = day - 1;
-        }
-        start.setFullYear(year, month, -day);
-      }
-
-      start = start.getTime();
-
-      var nextYear = month === 11 ? year+1 : year;
-      var nextMonth = month+1 % 12;
-      var end = new Date(self.activeDate.getTime());
-      end.setFullYear(nextYear, nextMonth, 1);
-      end = end.getTime();
-      var oneDay = 86400000;
-      var numberofDays = (end-start)/oneDay;
-
-      var days2Add = 42 - Math.round(numberofDays);
-      end = new Date(end);
-      end.setFullYear(nextYear, nextMonth, days2Add);
-      var tmpDate = new Date(start);
-
-      end = end.getTime();
-      if (!(start <= prevValue && prevValue <= end)) {
-        self.ignoreDateCompare = true;
-      } else {
-        self.ignoreDateCompare = false;
-        var tmp = new Date(prevValue);
-        if (tmp.getMonth() !== month) {
-          self.otherMonthSelectedDate = tmp;
-        } else {
-          self.otherMonthSelectedDate = undefined;
-          self.activeDate = tmp;
-        }
-
-      }
-    }*/
     self.refreshView();
   };
 
   $scope.toggleMode = function(direction) {
-    //self.clearIntervalVars();
     direction = direction || 1;
 
     if (($scope.datepickerMode === self.maxMode && direction === 1) || ($scope.datepickerMode === self.minMode && direction === -1)) {
