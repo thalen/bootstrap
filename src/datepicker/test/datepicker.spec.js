@@ -769,7 +769,7 @@ describe('datepicker directive', function() {
           it('will move to day mode when selecting', function() {
             triggerKeyDown(element, 'left', true);
             triggerKeyDown(element, 'enter', true);
-            expect(getActiveLabel()).toBe('30');
+            expect(getActiveLabel()).toBe('');
             expect(getTitle()).toBe('August 2010');
             expect($rootScope.date).toEqual(new Date('September 30, 2010 15:30:00'));
           });
@@ -835,7 +835,7 @@ describe('datepicker directive', function() {
           it('will move to month mode when selecting', function() {
             triggerKeyDown(element, 'left', true);
             triggerKeyDown(element, 'enter', true);
-            expect(getActiveLabel()).toBe('September');
+            expect(getActiveLabel()).toBe('');
             expect(getTitle()).toBe('2009');
             expect($rootScope.date).toEqual(new Date('September 30, 2010 15:30:00'));
           });
