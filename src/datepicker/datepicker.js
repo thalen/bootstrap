@@ -184,7 +184,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
     var year = self.activeDate.getFullYear();
     var month = self.activeDate.getMonth();
     if (typeof ngModelCtrl.$modelValue !== 'undefined' && ngModelCtrl.$modelValue !== null) {
-      var prevValue = undefined;
+      var prevValue;
       if (typeof ngModelCtrl.$modelValue === 'string' || ngModelCtrl.$modelValue instanceof String) {
         prevValue = Date.parse(ngModelCtrl.$modelValue);
       } else {
