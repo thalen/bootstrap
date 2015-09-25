@@ -1,0 +1,20 @@
+{
+  "name": "bootstrap",
+  "version": "0.14.0-SNAPSHOT",
+  "homepage": "https://github.com/thalen/bootstrap",
+  "authors": [
+    "Olle Thalen <olle.thalen@arbetsformedlingen.se>"
+  ],
+  "description": "Native angular directives for twitter bootstrap",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
