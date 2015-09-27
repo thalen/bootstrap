@@ -222,7 +222,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
       var tmpDate = new Date(start);
 
       end = end.getTime();
-      if (!(start <= prevValue && prevValue <= end)) {
+      if (start > prevValue || prevValue > end) {
         self.ignoreDateCompare = true;
       } else {
         self.ignoreDateCompare = false;
