@@ -77,7 +77,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
   }
 
   $scope.isActive = function(dateObject) {
-    var compareDate = typeof self.otherMonthSelectedDate !== 'undefined' ? self.otherMonthSelectedDate : self.activeDate;
+    var compareDate = angular.isDefined(self.otherMonthSelectedDate) ? self.otherMonthSelectedDate : self.activeDate;
 
     if (self.compare(dateObject.date, compareDate) === 0) {
       if (self.ignoreDateCompare) {
