@@ -183,7 +183,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
   this.calculateDateinterval = function () {
     var year = self.activeDate.getFullYear();
     var month = self.activeDate.getMonth();
-    if (typeof ngModelCtrl.$modelValue !== 'undefined' && ngModelCtrl.$modelValue !== null) {
+    if (angular.isDefined(ngModelCtrl.$modelValue) && ngModelCtrl.$modelValue !== null) {
       var prevValue;
       if (angular.isString(ngModelCtrl.$modelValue)) {
         prevValue = Date.parse(ngModelCtrl.$modelValue);
