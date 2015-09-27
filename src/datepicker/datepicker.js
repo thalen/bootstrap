@@ -207,8 +207,8 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
 
       start = start.getTime();
 
-      var nextYear = month === 11 ? year+1 : year;
-      var nextMonth = month+1 % 12;
+      var nextYear = month === 11 ? year + 1 : year;
+      var nextMonth = month + 1 % 12;
       var end = new Date(self.activeDate.getTime());
       end.setFullYear(nextYear, nextMonth, 1);
       end = end.getTime();
