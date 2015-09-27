@@ -370,7 +370,7 @@ module.exports = function(grunt) {
         grunt.config.set('karma.options', karmaOptions);
       }
       grunt.task.run(this.args.length ? 'karma:jenkins' : 'karma:continuous');
-      //grunt.task.run('karma:continuous');
+      grunt.task.run('karma:continuous');
     }
   });
 
